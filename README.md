@@ -33,11 +33,32 @@ This confirms that the NM_000207.3 mRNA sequence, translated from the correct st
 
 **This verifies preproinsulin — the raw, unprocessed translation product — not mature, biologically active insulin.** In real biology, preproinsulin undergoes two further processing steps before becoming active insulin: (1) removal of the N-terminal signal peptide (~24 residues) by signal peptidase, producing proinsulin, and (2) excision of the internal C-peptide by prohormone convertases, leaving the disulfide-linked A-chain and B-chain that constitute mature insulin. This project verifies the translation step only; it does not computationally model or verify the post-translational processing steps.
 
+## Extension: Deriving Mature Insulin Chains
+
+Building on the preproinsulin verification above, the mature insulin chains were derived by slicing the verified preproinsulin sequence at the real, curated processing boundaries (UniProt P01308, PTM/Processing section), rather than guessing or assuming boundaries.
+
+**Curated boundaries used (UniProt, 1-indexed) → Python slice (0-indexed):**
+- Signal peptide: 1–24 → `[0:24]`
+- Insulin B chain: 25–54 → `[24:54]`
+- C-peptide: 57–87 → `[56:87]`
+- Insulin A chain: 90–110 → `[89:110]`
+
+(Positions 55–56 and 88–89 are dibasic cleavage sites, Arg-Arg and Lys-Arg respectively, removed during real enzymatic processing and excluded from all four pieces above — consistent with known insulin biosynthesis.)
+
+**Result — all four pieces match documented sequences exactly:**
+```
+Signal peptide (24 aa): MALWMRLLPLLALLALWGPDPAAA
+Insulin B chain (30 aa): FVNQHLCGSHLVEALYLVCGERGFFYTPKT
+C-peptide (31 aa): EAEDLQVGQVELGGGPGAGSLQPLALEGSLQ
+Insulin A chain (21 aa): GIVEQCCTSICSLYQLENYCN
+```
+
+Mature, active insulin consists of the B chain and A chain, held together by disulfide bonds (documented at UniProt positions 31↔96, 43↔109, and 95↔100). This extension confirms, computationally, the full biosynthesis pathway from raw mRNA sequence through to the mature hormone's constituent chains — not just the initial translation product.
+
 ## Next Steps
 
-- Computationally identify and excise the signal peptide and C-peptide regions from the preproinsulin sequence to derive the predicted mature A-chain and B-chain sequences, and verify those against documented mature insulin chain sequences
 - Extend the same verified workflow (sequence retrieval → annotation-guided slicing → translation → independent verification) to a second gene, to test its generalizability
-- Explore known pathogenic INS gene variants and predict their effect on the translated protein
+- Explore known pathogenic INS gene variants and predict their effect on the translated protein or on processing (e.g., whether a mutation disrupts a cleavage site)
 
 ## Tools
 
